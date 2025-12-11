@@ -1,0 +1,182 @@
+// Brainy Stars LMS Schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+// Enums (Commented out for SQLite compatibility)
+// enum Role { ADMIN FRANCHISOR FRANCHISEE TEACHER PARENT STUDENT }
+// enum EnvironmentType { ... }
+// enum AssessmentType { ... }
+// enum CompletionStatus { ... }
+// enum CertificationLevel { ... }
+
+// User & Auth
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  name          String?
+  passwordHash  String?
+  role          String    @default("STUDENT") // Was Role
+  active        Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  ownedFranchises Franchise[] @relation("FranchisorOwner")
+  
+  // For Franchisees/Teachers
+  franchiseId    String?
+  franchise      Franchise? @relation("FranchiseUsers", fields: [franchiseId], references: [id])
+
+  // Teacher Specific
+  taughtClasses  Class[]
+  teacherProfile TeacherProfile?
+
+  // Parent Specific
+  children       StudentProfile[] @relation("ParentChildren")
+}
+
+model TeacherProfile {
+  id                  String   @id @default(uuid())
+  userId              String   @unique
+  user                User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  dob                 DateTime?
+  qualification       String?
+  experienceYears     Int      @default(0)
+  joiningDate         DateTime @default(now())
+  
+  // Training Progress
+  moduleProgress      ModuleProgress[]
+  certifications      Certification[]
+}
+
+model Franchise {
+  id          String   @id @default(uuid())
+  name        String
+  location    String
+  ownerId     String
+  owner       User     @relation("FranchisorOwner", fields: [ownerId], references: [id])
+  
+  users       User[]   @relation("FranchiseUsers")
+  classes     Class[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Class {
+  id          String   @id @default(uuid())
+  name        String
+  franchiseId String
+  franchise   Franchise @relation(fields: [franchiseId], references: [id])
+  teacherId   String?
+  teacher     User?     @relation(fields: [teacherId], references: [id])
+  
+  students    StudentProfile[]
+}
+
+model StudentProfile {
+  id          String   @id @default(uuid())
+  firstName   String
+  lastName    String
+  dob         DateTime
+  
+  classId     String?
+  class       Class?    @relation(fields: [classId], references: [id])
+  
+  parents     User[]    @relation("ParentChildren")
+  
+  createdAt   DateTime @default(now())
+}
+
+// --- Teacher Training Ecosystem ---
+
+model Course {
+  id          String   @id @default(uuid())
+  title       String   // e.g. "Diploma in Islamic Montessori Education"
+  description String
+  published   Boolean  @default(false)
+  
+  modules     Module[]
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Module {
+  id              String          @id @default(uuid())
+  courseId        String
+  course          Course          @relation(fields: [courseId], references: [id])
+  
+  title           String          // e.g. "EPL Environment"
+  type            String          @default("OTHER") // Was EnvironmentType
+  order           Int
+  
+  // Content
+  lessons         Lesson[]
+  
+  // Assessment Configuration (Max Marks)
+  maxTheoryMarks    Int @default(40)
+  maxMcqMarks       Int @default(15)
+  maxPracticalMarks Int @default(10)
+  
+  passMarks         Int @default(40) // Threshold to pass module
+  
+  userProgress    ModuleProgress[]
+}
+
+model Lesson {
+  id          String   @id @default(uuid())
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id])
+  title       String
+  content     String
+  videoUrl    String?
+  order       Int
+  isPractical Boolean  @default(false) // If true, requires upload
+}
+
+model ModuleProgress {
+  id          String   @id @default(uuid())
+  teacherId   String
+  teacher     TeacherProfile @relation(fields: [teacherId], references: [id])
+  moduleId    String
+  module      Module   @relation(fields: [moduleId], references: [id])
+  
+  status      String   @default("NOT_STARTED") // Was CompletionStatus
+  
+  // Marks Obtained
+  theoryScore    Float?
+  mcqScore       Float?
+  practicalScore Float?
+  totalScore     Float?
+  
+  // Evidence
+  practicalVideoUrl String?
+  assessorFeedback  String?
+  
+  completedAt DateTime?
+  updatedAt   DateTime @updatedAt
+
+  @@unique([teacherId, moduleId])
+}
+
+model Certification {
+  id          String             @id @default(uuid())
+  teacherId   String
+  teacher     TeacherProfile     @relation(fields: [teacherId], references: [id])
+  
+  title       String             // e.g. "Certified Montessori Teacher"
+  level       String             // Was CertificationLevel
+  issueDate   DateTime           @default(now())
+  certificateId String           @unique // Unique printable ID
+  
+  pdfUrl      String?
+}
