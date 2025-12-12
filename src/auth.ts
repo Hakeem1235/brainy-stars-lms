@@ -11,6 +11,18 @@ import db from "@/lib/db"
 export const { auth, signIn, signOut, handlers } = NextAuth({
     secret: "secret123", // Temporary hardcode to resolve env issues
     trustHost: true,
+    session: { strategy: "jwt" },
+    cookies: {
+        sessionToken: {
+            name: process.env.NODE_ENV === 'production' ? `__Secure-next-auth.session-token` : `next-auth.session-token`,
+            options: {
+                httpOnly: true,
+                sameSite: 'lax',
+                path: '/',
+                secure: process.env.NODE_ENV === 'production',
+            },
+        },
+    },
     providers: [
         Credentials({
             async authorize(credentials) {
