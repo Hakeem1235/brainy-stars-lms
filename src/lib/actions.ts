@@ -9,6 +9,14 @@ export async function authenticate(formData: FormData) {
     const redirectTo = (formData.get('redirectTo') as string) || '/dashboard';
 
     try {
+        // Enforce Clean Session: Always logout first before attempting new login
+        // This fixes the "Sticky Session" bug where User A remains logged in when User B tries to sign in
+        try {
+            await signOut({ redirect: false });
+        } catch (e) {
+            // Ignore error if not logged in
+        }
+
         console.log("[Action] Calling signIn...");
         const result = await signIn('credentials', {
             ...Object.fromEntries(formData),
