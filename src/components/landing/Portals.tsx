@@ -6,56 +6,64 @@ const portals = [
         role: "Admin",
         icon: ShieldCheck,
         desc: "System Configuration",
-        href: "/admin",
+        id: "FRANCHISOR", // custom ID for logic
+        href: "/login?role=FRANCHISOR&callbackUrl=/admin", // Using /admin as callback
         color: "bg-slate-700",
     },
     {
         role: "Franchisor",
         icon: Building2,
         desc: "Head Office Management",
-        href: "/franchisor",
+        id: "FRANCHISOR",
+        href: "/login?role=FRANCHISOR&callbackUrl=/franchisor",
         color: "bg-blue-600",
     },
     {
         role: "Franchise Owner",
         icon: Users2,
         desc: "Branch Administration",
-        href: "/franchisee",
+        id: "FRANCHISEE",
+        href: "/login?role=FRANCHISEE&callbackUrl=/franchisee",
         color: "bg-teal-600",
     },
     {
         role: "Teacher",
         icon: GraduationCap,
         desc: "Course & Classroom Portal",
-        href: "/teacher",
+        id: "TEACHER",
+        href: "/login?role=TEACHER&callbackUrl=/teacher",
         color: "bg-purple-600",
     },
     {
         role: "Parent",
         icon: Heart,
         desc: "Child Progress Tracking",
-        href: "/parent",
+        id: "PARENT",
+        href: "/login?role=PARENT&callbackUrl=/parent",
         color: "bg-pink-600",
     },
     {
         role: "Student",
         icon: Baby,
         desc: "Learning & Activities",
-        href: "/student",
+        id: "STUDENT",
+        href: "/login?role=STUDENT&callbackUrl=/student",
         color: "bg-orange-500",
     },
     {
         role: "Islamic Reviewer",
         icon: BookOpen,
         desc: "Content Compliance Compliance",
-        href: "/islamic-reviewer",
+        id: "ISLAMIC_REVIEWER",
+        href: "/login?role=ISLAMIC_REVIEWER&callbackUrl=/islamic-reviewer",
         color: "bg-emerald-600",
     },
     {
         role: "Shop",
         icon: ShoppingBag,
         desc: "E-Commerce Store",
-        href: "/shop",
+        id: "SHOP",
+        href: "/shop", // Shop might be public? Keep as is if public.
         color: "bg-indigo-600",
     },
 ];
@@ -86,7 +94,7 @@ export function Portals() {
                             <p className="text-xs text-slate-400 mb-4">{portal.desc}</p>
 
                             <div className="flex items-center text-xs font-semibold text-white/50 group-hover:text-white transition-colors">
-                                Login
+                                Login to Portal
                                 <ArrowRight className="w-3 h-3 ml-2 group-hover:translate-x-1 transition-transform" />
                             </div>
                         </Link>
