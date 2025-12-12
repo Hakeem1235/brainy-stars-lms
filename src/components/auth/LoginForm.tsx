@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
-import { authenticate, quietLogout } from '@/lib/actions';
+import { authenticate } from '@/lib/actions';
 import React, { useState } from 'react';
 import Link from 'next/link';
 
@@ -41,7 +41,8 @@ export function LoginForm({ session }: { session?: any }) {
             // STEP 1: FORCE LOGOUT (Separate Request)
             // This ensures the browser receives a "Set-Cookie: Deleted" header 
             // and processes it BEFORE sending the new Login request.
-            await quietLogout();
+            // Using fetch to API route ensures a true network round-trip.
+            await fetch('/api/logout', { cache: 'no-store' });
 
             // STEP 2: AUTHENTICATE
             const res = await authenticate(formData);
