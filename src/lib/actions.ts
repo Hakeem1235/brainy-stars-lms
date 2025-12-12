@@ -53,3 +53,10 @@ export async function logout() {
     revalidatePath('/');
     await signOut({ redirectTo: "/", redirect: true });
 }
+
+export async function quietLogout() {
+    // Logout without redirecting, for use in "Switch Account" flows
+    try {
+        await signOut({ redirect: false });
+    } catch (e) { /* ignore */ }
+}
