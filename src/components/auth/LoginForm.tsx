@@ -2,7 +2,7 @@
 
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
-import { authenticate } from '@/lib/actions';
+import { authenticate, quietLogout } from '@/lib/actions';
 import React, { useState } from 'react';
 import Link from 'next/link';
 
@@ -38,6 +38,12 @@ export function LoginForm({ session }: { session?: any }) {
         setErrorMessage('');
 
         try {
+            // STEP 1: FORCE LOGOUT (Separate Request)
+            // This ensures the browser receives a "Set-Cookie: Deleted" header 
+            // and processes it BEFORE sending the new Login request.
+            await quietLogout();
+
+            // STEP 2: AUTHENTICATE
             const res = await authenticate(formData);
 
             if (res?.error) {
