@@ -17,6 +17,7 @@ import {
     Sparkles
 } from "lucide-react";
 import { auth, signOut } from "@/auth";
+import { logout } from "@/lib/actions";
 
 import { MobileMenu } from "@/components/layout/MobileMenu";
 
@@ -293,10 +294,7 @@ export default async function DashboardLayout({
                 </div>
             )}
 
-            <form action={async () => {
-                "use server"
-                await signOut({ redirectTo: "/" })
-            }}>
+            <form action={logout}>
                 <button className="flex w-full items-center gap-3 px-3 py-2 rounded-lg hover:bg-red-900/20 hover:text-red-400 transition-colors text-left">
                     <LogOut className="w-5 h-5" />
                     <span>Sign Out</span>
