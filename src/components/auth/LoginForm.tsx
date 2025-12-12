@@ -1,20 +1,15 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight, LogOut, LayoutDashboard } from 'lucide-react';
-import { authenticate, logout } from '@/lib/actions';
+import { ArrowRight } from 'lucide-react';
+import { authenticate } from '@/lib/actions';
 import Link from 'next/link';
-// Note: We need to implement server action 'authenticate'
-
-// ... imports
 
 export function LoginForm({ session }: { session?: any }) {
     const searchParams = useSearchParams();
     const roleParam = searchParams.get('role');
     const role = roleParam || 'USER';
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
-
-    // ... existing Switch Account logic (lines 13-54)
 
     // Demo Credentials Data
     const demoCredentials = [
@@ -48,8 +43,17 @@ export function LoginForm({ session }: { session?: any }) {
             </div>
 
             <form action={async (formData) => {
-                const res = await authenticate(formData);
-                if (res) alert(res); // Simple error handling for now
+                try {
+                    const res = await authenticate(formData);
+                    if (res?.error) {
+                        alert(res.error);
+                    } else if (res?.success && res?.redirectUrl) {
+                        // Success! Redirect.
+                        window.location.href = res.redirectUrl;
+                    }
+                } catch (e) {
+                    console.error("Login action error:", e);
+                }
             }} className="space-y-4">
                 <input type="hidden" name="redirectTo" value={callbackUrl} />
                 <div>
