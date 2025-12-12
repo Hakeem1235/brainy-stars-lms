@@ -1,0 +1,11 @@
+﻿src/app/(dashboard)/teacher/courses/[courseId]/page.tsx(24,71): error TS2339: Property 'description' does not exist on type '{ id: string; title: string; description: string; progress: number; totalModules: number; completedModules: number; image: string; updatedAt: string; published: boolean; type: string; modules: { ...; }[]; } | { ...; }'.
+  Property 'description' does not exist on type '{ id: string; title: string; category: string; progress: number; status: string; lastAccessed: string; image: string; duration: string; modules: ({ id: string; title: string; status: string; score: number; duration: string; lessons: {}[]; } | { ...; })[]; }'.
+src/app/(dashboard)/teacher/page.tsx(10,11): error TS2322: Type '{ id: string; title: string; category: string; progress: number; status: string; lastAccessed: string; image: string; duration: string; modules: ({ id: string; title: string; status: string; score: number; duration: string; lessons: {}[]; } | { ...; })[]; }[]' is not assignable to type 'Course[]'.
+  Type '{ id: string; title: string; category: string; progress: number; status: string; lastAccessed: string; image: string; duration: string; modules: ({ id: string; title: string; status: string; score: number; duration: string; lessons: {}[]; } | { ...; })[]; }' is not assignable to type 'Course'.
+    Types of property 'modules' are incompatible.
+      Type '({ id: string; title: string; status: string; score: number; duration: string; lessons: {}[]; } | { id: string; title: string; status: string; score: null; duration: string; lessons: {}[]; })[]' is not assignable to type 'Module[]'.
+        Type '{ id: string; title: string; status: string; score: number; duration: string; lessons: {}[]; } | { id: string; title: string; status: string; score: null; duration: string; lessons: {}[]; }' is not assignable to type 'Module'.
+          Type '{ id: string; title: string; status: string; score: number; duration: string; lessons: {}[]; }' is not assignable to type 'Module'.
+            Types of property 'lessons' are incompatible.
+              Type '{}[]' is not assignable to type 'Lesson[]'.
+                Type '{}' is missing the following properties from type 'Lesson': id, title, completed

@@ -3,6 +3,7 @@
 import { useSearchParams } from 'next/navigation';
 import { ArrowRight } from 'lucide-react';
 import { authenticate } from '@/lib/actions';
+import React, { useState } from 'react';
 import Link from 'next/link';
 
 export function LoginForm({ session }: { session?: any }) {
@@ -10,10 +11,12 @@ export function LoginForm({ session }: { session?: any }) {
     const roleParam = searchParams.get('role');
     const role = roleParam || 'USER';
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
     // Demo Credentials Data
     const demoCredentials = [
-        { role: 'FRANCHISOR', label: 'Franchisor', email: 'admin@brainystars.com', color: 'text-brand-blue' },
+        { role: 'FRANCHISOR', label: 'Admin Portal', email: 'admin@brainystars.com', color: 'text-brand-blue' },
         { role: 'FRANCHISEE', label: 'Franchise Owner', email: 'branch@brainystars.com', color: 'text-teal-600' },
         { role: 'TEACHER', label: 'Teacher', email: 'teacher@brainystars.com', color: 'text-purple-600' },
         { role: 'PARENT', label: 'Parent', email: 'parent@brainystars.com', color: 'text-pink-600' },
@@ -30,6 +33,30 @@ export function LoginForm({ session }: { session?: any }) {
     // Auto-fill email if strictly one role selected
     const defaultEmail = shownCredentials.length === 1 ? shownCredentials[0].email : '';
 
+    const handleLogin = async (formData: FormData) => {
+        setIsSubmitting(true);
+        setErrorMessage('');
+
+        try {
+            const res = await authenticate(formData);
+
+            if (res?.error) {
+                setErrorMessage(res.error);
+                setIsSubmitting(false);
+            } else if (res?.success && res?.redirectUrl) {
+                // Use replace to avoid going back to login page on "Back" click
+                window.location.replace(res.redirectUrl);
+            } else {
+                setErrorMessage("Unknown response from server");
+                setIsSubmitting(false);
+            }
+        } catch (error) {
+            console.error("Login Error:", error);
+            setErrorMessage("An unexpected error occurred. Please try again.");
+            setIsSubmitting(false);
+        }
+    };
+
     return (
         <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
             <div className="text-center mb-8">
@@ -40,21 +67,14 @@ export function LoginForm({ session }: { session?: any }) {
                 <p className="text-slate-500">
                     Please sign in to continue
                 </p>
+                {errorMessage && (
+                    <div className="mt-2 p-2 bg-red-50 text-red-600 text-sm rounded border border-red-100">
+                        {errorMessage}
+                    </div>
+                )}
             </div>
 
-            <form action={async (formData) => {
-                try {
-                    const res = await authenticate(formData);
-                    if (res?.error) {
-                        alert(res.error);
-                    } else if (res?.success && res?.redirectUrl) {
-                        // Success! Redirect.
-                        window.location.href = res.redirectUrl;
-                    }
-                } catch (e) {
-                    console.error("Login action error:", e);
-                }
-            }} className="space-y-4">
+            <form action={handleLogin} className="space-y-4">
                 <input type="hidden" name="redirectTo" value={callbackUrl} />
                 <div>
                     <label className="block text-sm font-medium text-slate-700 mb-1">Email Address</label>
@@ -81,9 +101,10 @@ export function LoginForm({ session }: { session?: any }) {
 
                 <button
                     type="submit"
-                    className="w-full h-12 rounded-full bg-brand-blue text-white font-bold hover:bg-blue-900 transition-colors flex items-center justify-center gap-2 mt-4"
+                    disabled={isSubmitting}
+                    className="w-full h-12 rounded-full bg-brand-blue text-white font-bold hover:bg-blue-900 transition-colors flex items-center justify-center gap-2 mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    Sign In
+                    {isSubmitting ? 'Signing In...' : 'Sign In'}
                     <ArrowRight className="w-4 h-4" />
                 </button>
             </form>

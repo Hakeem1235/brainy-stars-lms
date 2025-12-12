@@ -3,9 +3,9 @@
 import { signIn, signOut } from '@/auth';
 import { AuthError } from 'next-auth';
 import { redirect } from 'next/navigation';
+import { revalidatePath } from 'next/cache';
 
 export async function authenticate(formData: FormData) {
-    console.log("[Action] authenticate called with:", Object.fromEntries(formData));
     const redirectTo = (formData.get('redirectTo') as string) || '/dashboard';
 
     try {
@@ -34,5 +34,7 @@ export async function authenticate(formData: FormData) {
 }
 
 export async function logout() {
-    await signOut({ redirectTo: "/" });
+    // Explicitly revalidate the landing page to clear any cached auth state
+    revalidatePath('/');
+    await signOut({ redirectTo: "/", redirect: true });
 }

@@ -120,13 +120,94 @@ export const MOCK_TEACHER_COURSES = [
     {
         id: "TC-001",
         title: "Montessori 5 Environments",
+        description: "Mastering the core environments of Montessori education: EPL, Sensorial, Math, Language, and Culture.",
+        category: "Core Training",
         progress: 35,
         status: "In Progress",
         lastAccessed: "2 days ago",
+        image: "https://images.unsplash.com/photo-1542810634-71277d95dc24??q=80&w=2670&auto=format&fit=crop",
+        duration: "4 weeks",
         modules: [
-            { id: "m1", title: "EPL", status: "Completed", score: 90 },
-            { id: "m2", title: "Sensorial", status: "In Progress", score: null },
-            { id: "m3", title: "Math", status: "Locked", score: null },
+            {
+                id: "m1",
+                title: "Exercises of Practical Life (EPL)",
+                status: "Completed",
+                score: 90,
+                duration: "1 week",
+                lessons: [
+                    { id: "l1", title: "Introduction to EPL", completed: true, isPractical: false },
+                    { id: "l2", title: "Pouring Exercises", completed: true, isPractical: true },
+                    { id: "l3", title: "Folding Cloths", completed: true, isPractical: true },
+                    { id: "l4", title: "Walking on the Line", completed: true, isPractical: true }
+                ]
+            },
+            {
+                id: "m2",
+                title: "Sensorial Education",
+                status: "In Progress",
+                score: null,
+                duration: "1 week",
+                lessons: [
+                    { id: "l5", title: "The Pink Tower", completed: true, isPractical: true },
+                    { id: "l6", title: "The Broad Stair", completed: false, isPractical: true }
+                ]
+            },
+            { id: "m3", title: "Mathematics", status: "Locked", score: null, duration: "2 weeks", lessons: [] },
+            { id: "m4", title: "Language", status: "Locked", score: null, duration: "2 weeks", lessons: [] },
+            { id: "m5", title: "Culture & Science", status: "Locked", score: null, duration: "2 weeks", lessons: [] }
+        ]
+    },
+    {
+        id: "TC-002",
+        title: "Islamic Pedagogy Integration",
+        description: "Integrating Islamic values and daily Duas into the Montessori classroom workflow.",
+        category: "Religious",
+        progress: 15,
+        status: "In Progress",
+        lastAccessed: "1 hour ago",
+        image: "https://images.unsplash.com/photo-1577896334614-5d15a5136894?q=80&w=2670&auto=format&fit=crop",
+        duration: "3 weeks",
+        modules: [
+            {
+                id: "m1",
+                title: "Tarbiyah Basics",
+                status: "Completed",
+                score: 85,
+                duration: "1 week",
+                lessons: [
+                    { id: "l1", title: "Concept of Tarbiyah", completed: true, isPractical: false },
+                    { id: "l2", title: "Role of the Teacher", completed: true, isPractical: false },
+                    { id: "l3", title: "Creating an Islamic Environment", completed: true, isPractical: false }
+                ]
+            },
+            {
+                id: "m2",
+                title: "Prophetic Stories",
+                status: "In Progress",
+                score: null,
+                duration: "1 week",
+                lessons: [
+                    { id: "l4", title: "Storytelling Techniques", completed: true, isPractical: false },
+                    { id: "l5", title: "Story of Prophet Nuh (AS)", completed: false, isPractical: false }
+                ]
+            },
+            { id: "m3", title: "Daily Duas", status: "Locked", score: null, duration: "1 week", lessons: [] }
+
+        ]
+    },
+    {
+        id: "TC-003",
+        title: "Classroom Management Pro",
+        description: "Advanced techniques for managing a Montessori environment effectively.",
+        category: "Professional Development",
+        progress: 0,
+        status: "Not Started",
+        lastAccessed: "Never",
+        image: "https://images.unsplash.com/photo-1557804506-669a67965ba0?q=80&w=2574&auto=format&fit=crop",
+        duration: "2 weeks",
+        modules: [
+            { id: "m1", title: "Conflict Resolution", status: "Locked", score: null, duration: "1 week", lessons: [] },
+            { id: "m2", title: "Parent Communication", status: "Locked", score: null, duration: "1 week", lessons: [] }
         ]
     }
 ];

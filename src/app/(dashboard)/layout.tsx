@@ -33,10 +33,12 @@ export default async function DashboardLayout({
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1 bg-brand-blue text-slate-300 h-full">
             <div className="mb-6 px-2">
                 <p className="text-xs uppercase tracking-wider text-slate-500 font-semibold mb-2">Menu</p>
-                <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-brand-blue/50 text-white hover:bg-brand-blue transition-colors">
-                    <LayoutDashboard className="w-5 h-5" />
-                    <span>Dashboard</span>
-                </Link>
+                {role !== 'STUDENT' && (
+                    <Link href="/dashboard" className="flex items-center gap-3 px-3 py-2 rounded-lg bg-brand-blue/50 text-white hover:bg-brand-blue transition-colors">
+                        <LayoutDashboard className="w-5 h-5" />
+                        <span>Dashboard</span>
+                    </Link>
+                )}
             </div>
 
             {/* Role Specific Links */}

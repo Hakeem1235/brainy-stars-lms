@@ -1,17 +1,19 @@
 'use server';
 
-import { MOCK_COURSES, MOCK_USERS, MOCK_TEACHERS_DIRECTORY } from "@/lib/mock-db";
+import { MOCK_COURSES, MOCK_USERS, MOCK_TEACHERS_DIRECTORY, MOCK_TEACHER_COURSES } from "@/lib/mock-db";
 
 // Teacher: Get Course Details
 export async function getCourseDetails(courseId: string) {
     // Simulate API delay
     await new Promise(resolve => setTimeout(resolve, 500));
-    return MOCK_COURSES.find(c => c.id === courseId) || MOCK_COURSES[0];
+    // Check both lists for the course
+    const course = MOCK_TEACHER_COURSES.find(c => c.id === courseId) || MOCK_COURSES.find(c => c.id === courseId);
+    return course || MOCK_COURSES[0];
 }
 
 export async function getTeacherCourses() {
     await new Promise(resolve => setTimeout(resolve, 500));
-    return MOCK_COURSES;
+    return MOCK_TEACHER_COURSES;
 }
 
 // Franchisee: Get Students
