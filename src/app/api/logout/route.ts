@@ -10,8 +10,10 @@ export async function GET() {
     cookieStore.delete('__Secure-next-auth.session-token');
     cookieStore.delete('next-auth.callback-url');
     cookieStore.delete('__Secure-next-auth.callback-url');
-    cookieStore.delete('next-auth.csrf-token');
-    cookieStore.delete('__Secure-next-auth.csrf-token');
+
+    // CSRF Token MUST remain for the next login to succeed!
+    // cookieStore.delete('next-auth.csrf-token');
+    // cookieStore.delete('__Secure-next-auth.csrf-token');
 
     // Also delete the "state" cookie if it exists (OIDC)
     cookieStore.delete('next-auth.state');
