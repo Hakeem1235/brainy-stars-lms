@@ -1,14 +1,57 @@
 'use client';
 
 import { useSearchParams } from 'next/navigation';
-import { ArrowRight } from 'lucide-react';
-import { authenticate } from '@/lib/actions';
+import { ArrowRight, LogOut, LayoutDashboard } from 'lucide-react';
+import { authenticate, logout } from '@/lib/actions';
+import Link from 'next/link';
 // Note: We need to implement server action 'authenticate'
 
-export function LoginForm() {
+export function LoginForm({ session }: { session?: any }) {
     const searchParams = useSearchParams();
     const role = searchParams.get('role') || 'USER';
     const callbackUrl = searchParams.get('callbackUrl') || '/dashboard';
+
+    // If user is already logged in, show Switch Account UI
+    if (session?.user) {
+        return (
+            <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-100">
+                <div className="text-center mb-8">
+                    <img src="/logo.png" alt="Brainy Stars" className="h-16 w-auto mx-auto mb-4 object-contain" />
+                    <h1 className="text-2xl font-bold text-brand-blue mb-2">Welcome Back!</h1>
+                    <p className="text-slate-500">
+                        You are currently signed in as
+                    </p>
+                    <div className="mt-4 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                        <p className="font-bold text-slate-800">{session.user.name}</p>
+                        <p className="text-sm text-slate-500">{session.user.email}</p>
+                        <span className="inline-block mt-2 px-2 py-1 bg-brand-blue/10 text-brand-blue text-xs font-bold rounded uppercase tracking-wider">
+                            {session.user.role}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="space-y-3">
+                    <Link
+                        href="/dashboard"
+                        className="w-full h-12 rounded-full bg-brand-blue text-white font-bold hover:bg-blue-900 transition-colors flex items-center justify-center gap-2"
+                    >
+                        <LayoutDashboard className="w-4 h-4" />
+                        Continue to Dashboard
+                    </Link>
+
+                    <form action={logout}>
+                        <button
+                            type="submit"
+                            className="w-full h-12 rounded-full bg-white text-red-600 font-bold border border-red-200 hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
+                        >
+                            <LogOut className="w-4 h-4" />
+                            Sign Out / Switch Account
+                        </button>
+                    </form>
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="w-full max-w-md bg-white p-8 rounded-2xl shadow-xl border border-gray-100">

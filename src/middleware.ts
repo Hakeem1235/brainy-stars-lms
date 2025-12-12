@@ -5,32 +5,48 @@ export default auth((req) => {
     const isLoggedIn = !!req.auth;
     const { nextUrl } = req;
     const role = req.auth?.user?.role;
+    const pathname = nextUrl.pathname;
 
-    // Paths
-    const isDashboard = nextUrl.pathname.startsWith('/dashboard') ||
-        nextUrl.pathname.startsWith('/franchisor') ||
-        nextUrl.pathname.startsWith('/franchisee') ||
-        nextUrl.pathname.startsWith('/teacher') ||
-        nextUrl.pathname.startsWith('/parent') ||
-        nextUrl.pathname.startsWith('/student') ||
-        nextUrl.pathname.startsWith('/islamic-reviewer') ||
-        nextUrl.pathname.startsWith('/support') ||
-        nextUrl.pathname.startsWith('/ai-tools');
+    // Define Role Paths
+    const rolePaths = {
+        FRANCHISOR: ['/franchisor', '/ai-tools'],
+        FRANCHISEE: ['/franchisee'],
+        TEACHER: ['/teacher'],
+        PARENT: ['/parent'],
+        STUDENT: ['/student'],
+        ISLAMIC_REVIEWER: ['/islamic-reviewer'],
+        SUPPORT_AGENT: ['/support'],
+        ADMIN: ['/admin']
+    };
 
-    const isAuthRoute = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/register');
+    const isAuthRoute = pathname.startsWith('/login') || pathname.startsWith('/register');
+    const isDashboardRoute = pathname.startsWith('/dashboard');
 
+    // 1. If on Auth Route (Login), ALLOW it even if logged in
+    // This allows users to "Switch Accounts"
     if (isAuthRoute) {
-        if (isLoggedIn) {
-            // Only redirect if role is present to avoid loops with incomplete sessions
-            if (req.auth?.user?.role) {
-                return NextResponse.redirect(new URL('/dashboard', nextUrl));
-            }
-            // If logged in but no role, allow access to login page to re-authenticate
-        }
         return null;
     }
 
-    if (isDashboard && !isLoggedIn) {
+    // 2. Strict Role Checking for Protected Routes
+    if (isLoggedIn && role) {
+        // checks if the current path belongs to a specific role group
+        // e.g., if path is /teacher/..., check if role is TEACHER
+
+        if (pathname.startsWith('/franchisor') && role !== 'FRANCHISOR') return NextResponse.redirect(new URL('/login', nextUrl));
+        if (pathname.startsWith('/franchisee') && role !== 'FRANCHISEE') return NextResponse.redirect(new URL('/login', nextUrl));
+        if (pathname.startsWith('/teacher') && role !== 'TEACHER') return NextResponse.redirect(new URL('/login', nextUrl));
+        if (pathname.startsWith('/parent') && role !== 'PARENT') return NextResponse.redirect(new URL('/login', nextUrl));
+        if (pathname.startsWith('/student') && role !== 'STUDENT') return NextResponse.redirect(new URL('/login', nextUrl));
+        if (pathname.startsWith('/islamic-reviewer') && role !== 'ISLAMIC_REVIEWER') return NextResponse.redirect(new URL('/login', nextUrl));
+    }
+
+    // 3. General Dashboard Protection
+    // Identifies keys in rolePaths
+    const restrictedPrefixes = ['/franchisor', '/franchisee', '/teacher', '/parent', '/student', '/islamic-reviewer', '/support', '/admin', '/ai-tools', '/dashboard'];
+    const isProtectedPath = restrictedPrefixes.some(prefix => pathname.startsWith(prefix));
+
+    if (isProtectedPath && !isLoggedIn) {
         let callbackUrl = nextUrl.pathname;
         if (nextUrl.search) {
             callbackUrl += nextUrl.search;
@@ -38,10 +54,6 @@ export default auth((req) => {
         const encodedCallbackUrl = encodeURIComponent(callbackUrl);
         return NextResponse.redirect(new URL(`/login?callbackUrl=${encodedCallbackUrl}`, nextUrl));
     }
-
-    // Basic Role-Based Redirection logic could go here, 
-    // but usually better handled in the page itself or distinct layouts.
-    // For now, we allow access to /dashboard/* if logged in.
 
     return null;
 })

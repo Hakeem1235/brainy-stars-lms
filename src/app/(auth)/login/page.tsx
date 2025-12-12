@@ -2,7 +2,11 @@ import { LoginForm } from "@/components/auth/LoginForm";
 import Link from "next/link";
 import { Suspense } from "react";
 
-export default function LoginPage() {
+import { auth } from "@/auth";
+
+export default async function LoginPage() {
+    const session = await auth();
+
     return (
         <div className="min-h-screen bg-slate-900 flex flex-col items-center justify-center p-4">
             <div className="mb-8 text-center">
@@ -13,7 +17,7 @@ export default function LoginPage() {
             </div>
 
             <Suspense fallback={<div className="text-white text-center">Loading login form...</div>}>
-                <LoginForm />
+                <LoginForm session={session} />
             </Suspense>
 
             <div className="mt-12 text-slate-600 text-sm">
